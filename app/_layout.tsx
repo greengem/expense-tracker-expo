@@ -5,6 +5,8 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { initDB } from './services/database';
+import { Slot } from 'expo-router';
+import "../global.css"
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -52,14 +54,34 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+const CustomDefaultTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    // Latte
+    background: '#eff1f5', // ctp-crust
+    text: '#4c4f69', // ctp-text
+  },
+};
+
+const CustomDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    // Mocha
+    background: '#1e1e2e', // ctp-crust
+    text: '#cdd6f4', // ctp-text
+  },
+};
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="new-category-modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
   );
