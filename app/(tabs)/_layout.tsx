@@ -4,9 +4,17 @@ import { IconDashboard, IconCreditCardPay, IconInfoCircle, IconHistory, IconCate
 
 export default function TabLayout() {
   return (
+    // FIX: Should be using nativewind classes and not hardcoded for dark mode
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'red',
+        headerStyle: {
+          backgroundColor: '#181825',
+        },
+        headerTintColor: '#cdd6f4',
+        tabBarActiveTintColor: '#89b4fa',
+        tabBarStyle: {
+          backgroundColor: '#181825',
+        },
       }}
     >
       <Tabs.Screen
@@ -28,18 +36,18 @@ export default function TabLayout() {
         options={{
           title: 'Categories',
           tabBarIcon: ({ color }) => <IconCategory color={color} />,
-          // headerRight: () => (
-          //   <Link href="/new-category-modal" asChild>
-          //     <Pressable>
-          //       {({ pressed }) => (
-          //         <IconInfoCircle
-          //           size={25}
-          //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-          //         />
-          //       )}
-          //     </Pressable>
-          //   </Link>
-          // ),
+          headerRight: () => (
+            <Link href="/new-category-modal" asChild>
+              <Pressable>
+                {({ pressed }) => (
+                  <IconInfoCircle
+                    size={25}
+                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            </Link>
+          ),
         }}
       />
       <Tabs.Screen
