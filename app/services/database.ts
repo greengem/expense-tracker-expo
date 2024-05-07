@@ -1,17 +1,21 @@
 import * as SQLite from 'expo-sqlite';
+import { labelColors } from '@/components/labelColors';
 
 const db = SQLite.openDatabase('expense_tracker.db');
+
+const defaultCategories = [
+  { name: 'Default', color: labelColors[0] },
+  { name: 'Food', color: labelColors[1] },
+  { name: 'Transportation', color: labelColors[2] },
+  { name: 'Housing', color: labelColors[3] },
+  { name: 'Utilities', color: labelColors[4] },
+  { name: 'Entertainment', color: labelColors[5] }
+];
 
 // Initialize the database
 // Enhanced initDB with categories initialization
 export const initDB = (): Promise<void> => {
-  const defaultCategories = [
-    { name: 'Food', color: 'red' },
-    { name: 'Transportation', color: 'blue' },
-    { name: 'Housing', color: 'green' },
-    { name: 'Utilities', color: 'yellow' },
-    { name: 'Entertainment', color: 'purple' }
-  ];
+
 
   return new Promise((resolve, reject) => {
     db.transaction(
@@ -171,13 +175,12 @@ export const fetchCurrentBalance = (): Promise<number> => {
 };
 
 
-// Fetch all categories from the database
 export const fetchCategories = (): Promise<any[]> => {
   return new Promise((resolve, reject) => {
     db.transaction(
       tx => {
         tx.executeSql(
-          `SELECT * FROM categories ORDER BY name;`, // Order by name for a consistent display order
+          `SELECT * FROM categories ORDER BY CASE WHEN name = 'Default' THEN 0 ELSE 1 END, name;`,
           [],
           (_, result) => {
             const categories = result.rows._array;
@@ -217,6 +220,12 @@ export const addCategory = (name: string, color: string): Promise<void> => {
 // Delete a category from the database
 export const deleteCategory = (name: string): Promise<void> => {
   return new Promise((resolve, reject) => {
+    if (name === 'Default') {
+      console.error('The default category cannot be deleted');
+      reject('The default category cannot be deleted');
+      return;
+    }
+
     db.transaction(tx => {
       tx.executeSql(
         `DELETE FROM categories WHERE name = ?;`,
@@ -293,13 +302,6 @@ export const fetchTransactionsByYear = (year: number): Promise<any[]> => {
 
 
 export const deleteAllData = (): Promise<void> => {
-  const defaultCategories = [
-    { name: 'Food', color: 'red' },
-    { name: 'Transportation', color: 'blue' },
-    { name: 'Housing', color: 'green' },
-    { name: 'Utilities', color: 'yellow' },
-    { name: 'Entertainment', color: 'purple' }
-  ];
 
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
