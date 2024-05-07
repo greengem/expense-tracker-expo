@@ -1,10 +1,41 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
 import { addCategory } from './services/database';
 import { router } from 'expo-router';
 import Input from "@/components/Input";
 import { Button } from "@/components/Button";
-import clsx from "clsx";
+import { labelColors } from "@/components/labelColors";
+
+interface ColorSelectorProps {
+  color: string;
+  selectedColor: string;
+  onSelect: (color: string) => void;
+}
+
+const styles = StyleSheet.create({
+  colorSelector: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  color: {
+    borderRadius: 50,
+  },
+});
+
+const ColorSelector = ({ color, selectedColor, onSelect }: ColorSelectorProps) => (
+  <Pressable onPress={() => onSelect(color)}>
+    <View
+      className={`h-8 w-8 rounded-full ${color === selectedColor ? 'border-2 border-white' : ''}`}
+      style={[styles.colorSelector, { backgroundColor: color === selectedColor ? 'white' : 'transparent' }]}
+    >
+      <View
+        className="h-6 w-6 rounded-full"
+        style={[styles.color, { backgroundColor: color ? color : 'transparent' }]}
+      />
+    </View>
+  </Pressable>
+);
+
 
 export default function ModalScreen() {
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -19,42 +50,27 @@ export default function ModalScreen() {
     router.back();
   };
 
-  const labelColours = [
-    '#f2cdcd', 
-    '#f5c2e7', 
-    '#cba6f7', 
-    '#f38ba8', 
-    '#eba0ac', 
-    '#fab387', 
-    '#f9e2af',
-    '#a6e3a1',
-    '#94e2d5',
-    '#89dceb',
-    '#74c7ec',
-    '#89b4fa',
-    '#b4befe',
-  ];
 
   return (
     <View className="ctp-latte dark:ctp-mocha p-5 flex flex-col gap-5">
+      
       <Input
         placeholder='New Category...'
         value={newCategoryName}
         onChangeText={setNewCategoryName}
       />
+
       <View className="flex flex-row flex-wrap gap-2">
-      {labelColours.map((color) => (
-        <Pressable onPress={() => setSelectedColor(color)}>
-          <View
+        {labelColors.map((color) => (
+          <ColorSelector
             key={color}
-            className={clsx("h-6 w-6 rounded-full", {
-              'ring-2 ring-white': color === selectedColor,
-            })}
-            style={{ backgroundColor: color }}
+            color={color}
+            selectedColor={selectedColor}
+            onSelect={setSelectedColor}
           />
-        </Pressable>
-      ))}
+        ))}
       </View>
+
       <Button onPress={handleAddCategory} title="Add Category" />
     </View>
   )
