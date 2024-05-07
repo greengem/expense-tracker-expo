@@ -37,7 +37,7 @@ export default function TabCategoryScreen() {
               <View className='h-5 w-5 rounded-full' style={{backgroundColor: category.color}} />
               <Text className='text-ctp-text'>{category.name}</Text>
             </View>
-            <IconTrash size={20} onPress={() => handleDeleteCategory(category.name)} />
+            {category.name !== 'Default' && <IconTrash size={20} onPress={() => handleDeleteCategory(category.name)} />}
           </View>
         ))}
     </ScrollView>
