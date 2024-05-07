@@ -33,14 +33,14 @@ export default function TabOneScreen() {
     }
   };
 
-  const formattedBalance = currentBalance !== null ? `£${currentBalance.toFixed(2)}` : '$0.00';
+  const formattedBalance = currentBalance !== null ? `£${currentBalance.toFixed(2)}` : '£0.00';
 
   return (
     <View className="p-5 ctp-mocha">
       <Card title='Expenses'>
         <Text className='text-4xl font-semibold text-ctp-text'>{formattedBalance}</Text>
       </Card>
-      {/* <Button variant='danger' onPress={handleDeleteAllData} title='Delete all data' /> */}
+      <Button variant='danger' onPress={handleDeleteAllData} title='Delete all data' />
     </View>
   );
 }
