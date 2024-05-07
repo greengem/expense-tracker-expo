@@ -12,7 +12,7 @@ export function Button({ title, onPress, variant = 'primary', Icon }: ButtonProp
     const buttonClasses = clsx(
         'p-4 rounded-xl items-center justify-center',
         {
-          'bg-ctp-blue': variant === 'primary',
+          'bg-ctp-mauve': variant === 'primary',
           'bg-ctp-pink': variant === 'secondary',
           'bg-ctp-red': variant === 'danger',
         }
