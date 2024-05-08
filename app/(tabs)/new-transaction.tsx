@@ -1,11 +1,11 @@
-import { useState,  useCallback, useEffect } from 'react';
+import { useState,  useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { View, ScrollView, Text, Pressable, Modal, FlatList, TouchableOpacity } from 'react-native';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { View, Text, Pressable, Modal, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { fetchCategories, addTransaction } from '../services/database';
 import { router } from 'expo-router';
 import Input from '@/components/Input';
-import {Picker} from '@react-native-picker/picker';
 import { Button } from '@/components/Button';
 
 interface FormData {
@@ -21,14 +21,16 @@ interface Category {
 }
 
 
-
 export default function TabNewTransactionScreen() {
   // States
   const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [formErrors, setFormErrors] = useState<{ [K in keyof FormData]?: string }>({});
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const [formErrors, setFormErrors] = useState<{ [K in keyof FormData]?: string }>({});
 
   // Load Categories on Focus
   useFocusEffect(
@@ -36,10 +38,36 @@ export default function TabNewTransactionScreen() {
       const loadCategories = async () => {
         const fetchedCategories = await fetchCategories();
         setCategories(fetchedCategories);
+
+        // Set the default category to "Default"
+        const defaultCategory = fetchedCategories.find(category => category.name === 'Default');
+        if (defaultCategory) {
+          setSelectedCategory(defaultCategory);
+          setFormData(prev => ({ ...prev, category: defaultCategory.id }));
+        }
       };
       loadCategories();
     }, [])
   );
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+    setShowDatePicker(Platform.OS === 'ios');
+  };
+
+  const showDatepicker = () => {
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: date,
+        onChange,
+        mode: 'date',
+        is24Hour: true,
+      });
+    } else {
+      setShowDatePicker(true);
+    }
+  };
 
   const [formData, setFormData] = useState<FormData>({
     amount: '',
@@ -115,35 +143,20 @@ export default function TabNewTransactionScreen() {
         }}
       >
         <View className="p-5 ctp-latte dark:ctp-mocha bg-ctp-crust flex grow py-20">
-            <FlatList
-              data={categories}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => onCategoryChange(item)}>
-                <View key={item.id} className='flex flex-row items-center py-3 gap-3'>
-                  <View className='h-5 w-5 rounded-full' style={{backgroundColor: item.color}} />
-                  <Text className='text-ctp-text'>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-              )}
-            />
+          <FlatList
+            data={categories}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => onCategoryChange(item)}>
+              <View key={item.id} className='flex flex-row items-center py-3 gap-3'>
+                <View className='h-5 w-5 rounded-full' style={{backgroundColor: item.color}} />
+                <Text className='text-ctp-text'>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+            )}
+          />
         </View>
       </Modal>
-
-      {/* 
-      <View className='flex flex-row justify-center p-0 -ml-3'>
-        <DateTimePicker
-          className='w-full'
-          value={date}
-          mode="date"
-          display="spinner"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || date;
-            setDate(currentDate);
-          }}
-        />
-      </View> 
-      */}
 
       <Input
         onChangeText={(text) => setFormData({ ...formData, note: text })}
@@ -151,7 +164,30 @@ export default function TabNewTransactionScreen() {
         placeholder="Note"
       />
 
+      <Pressable onPress={showDatepicker}>
+        <View pointerEvents="none">
+          <Input
+            editable={false}
+            value={date.toLocaleDateString()}
+          />
+        </View>
+      </Pressable>
+
+      <View className='flex flex-row justify-center p-0 -ml-3'>  
+        {showDatePicker && (
+          <DateTimePicker
+            display="spinner"
+            accentColor='#c6a0f6'
+            className='w-full'
+            value={date}
+            mode="date"
+            onChange={onChange}
+          />
+        )}
+      </View>
+
       <Button onPress={onSubmit} title='Add Transaction' />
+
     </View>
   );
 }
