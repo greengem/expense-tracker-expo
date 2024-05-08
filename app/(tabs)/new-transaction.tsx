@@ -2,6 +2,7 @@ import { useState,  useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { View, Text, Pressable, Modal, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { fetchCategories, addTransaction } from '../services/database';
 import { router } from 'expo-router';
@@ -50,7 +51,7 @@ export default function TabNewTransactionScreen() {
     }, [])
   );
 
-  const onChange = (event, selectedDate) => {
+  const onChange = (_event: DateTimePickerEvent, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     setShowDatePicker(Platform.OS === 'ios');
