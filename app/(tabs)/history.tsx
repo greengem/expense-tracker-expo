@@ -63,11 +63,16 @@ export default function TabHistoryScreen() {
     <ScrollView className="p-5 ctp-latte dark:ctp-mocha">
         {transactions.map((transaction) => (
           <Card key={transaction.id}>
-              <Text className='text-ctp-text text-3xl font-semibold'>£{transaction.amount}</Text>
-              <Text className='text-ctp-text'>Category: {transaction.categoryName}</Text>
-              <Text className='text-ctp-text'>{format(parseISO(transaction.date), 'dd/MM/yyyy')}</Text>
-              {transaction.note && <Text className='text-ctp-text'>Note: {transaction.note}</Text>}
+            <View className='flex flex-row justify-between items-center'>
+              <Text className='text-ctp-mauve text-3xl font-semibold'>£{transaction.amount}</Text>
               <Button variant='danger' title='Delete' onPress={() => handleDeleteTransaction(transaction.id)} />
+            </View>
+
+            {transaction.note && <Text className='text-ctp-subtext0'>{transaction.note}</Text>}
+
+            <Text className='text-ctp-subtext0'>{transaction.categoryName}</Text>
+            <Text className='text-ctp-subtext0'>{format(parseISO(transaction.date), 'dd/MM/yyyy')}</Text>
+            
           </Card>
         ))}
     </ScrollView>
